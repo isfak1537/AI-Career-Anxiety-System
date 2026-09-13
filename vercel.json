@@ -2,6 +2,17 @@
   "version": 2,
   "name": "ai-career-anxiety-system",
   "cleanUrls": true,
+  "functions": {
+    "api/index.py": {
+      "excludeFiles": "{tests/**,__tests__/**,**/*.test.py,**/test_*.py,fixtures/**,testdata/**,Career_Anxiety_due_to_AI.xlsx,final_all(1).ipynb,*.md}"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

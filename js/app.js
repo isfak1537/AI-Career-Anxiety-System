@@ -282,7 +282,7 @@
     executePrediction();
   }
 
-  function executePrediction() {
+  async function executePrediction() {
     const deptVal = departmentSelect.value === 'Other Department'
       ? (otherDepartmentInput.value.trim() || 'Department of General Studies')
       : departmentSelect.value;
@@ -304,14 +304,62 @@
       ai_future_perspective: aiFuturePerspectiveSelect.value,
       ai_replace_jobs: aiReplaceJobsSelect.value,
       ai_takeover_time: aiTakeoverTimeSelect.value,
+      cohort_override: cohortOverrideSelect.value || 'auto',
     };
 
     const override = cohortOverrideSelect.value;
-    const result = window.CareerAnxietyInference.runPrediction(rawInputs, override);
-    lastPredictionResult = result;
 
-    displayPredictionResults(result);
-    populateExplainabilityTable(result);
+    // 1. Try Live Python Vercel Function Endpoint
+    try {
+      const response = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rawInputs),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const serverResult = {
+          cohort: data.cohort,
+          autoCohort: data.auto_cohort,
+          isOverride: data.is_override,
+          prediction: {
+            predClass: data.prediction.predicted_class,
+            probability: data.prediction.probability,
+            modelName: data.model_name,
+          },
+          explainability: {
+            featureRows: data.all_features_ranked.map(f => ({
+              key: f.key,
+              displayName: f.display_name,
+              category: 'Feature Attribution',
+              inputValue: f.input_value,
+              contribution: f.contribution,
+              absContribution: f.abs_contribution,
+              direction: f.direction,
+            })),
+          },
+          engineered: data.engineered_features,
+          rawInputs,
+          fromPythonBackend: true,
+        };
+
+        lastPredictionResult = serverResult;
+        displayPredictionResults(serverResult);
+        populateExplainabilityTable(serverResult);
+        renderShapChart();
+        return;
+      }
+    } catch (err) {
+      // Backend not running / static mode — proceed to client inference engine
+    }
+
+    // 2. Client-Side Instant Inference Engine (Fallback / Static CDN Mode)
+    const clientResult = window.CareerAnxietyInference.runPrediction(rawInputs, override);
+    lastPredictionResult = clientResult;
+
+    displayPredictionResults(clientResult);
+    populateExplainabilityTable(clientResult);
     renderShapChart();
   }
 
