@@ -93,6 +93,9 @@ def aggregate_feature_contributions(
     return aggregated
 
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
 @lru_cache(maxsize=1)
 def get_daffodil_background_data() -> np.ndarray:
     """
@@ -100,7 +103,21 @@ def get_daffodil_background_data() -> np.ndarray:
     Constructs 15 k-means centroids from the Daffodil training split.
     Cached in memory to ensure fast (<0.1s) model-agnostic explanations.
     """
+    import joblib
+
+    # 1. Check pre-serialized background centroids artifact for instant (<1ms) serverless loading
+    cached_paths = [
+        PROJECT_ROOT / "models" / "daffodil_background.joblib",
+        Path("models/daffodil_background.joblib"),
+    ]
+    for cp in cached_paths:
+        if cp.exists():
+            return joblib.load(cp)
+
+    # 2. Fallback to generating from survey dataset if cached artifact is missing
     data_paths = [
+        PROJECT_ROOT / "data" / "Career_Anxiety_due_to_AI.xlsx",
+        PROJECT_ROOT / "Career_Anxiety_due_to_AI.xlsx",
         Path("data/Career_Anxiety_due_to_AI.xlsx"),
         Path("Career_Anxiety_due_to_AI.xlsx"),
     ]
@@ -108,9 +125,12 @@ def get_daffodil_background_data() -> np.ndarray:
     if data_path is None:
         raise FileNotFoundError("Career_Anxiety_due_to_AI.xlsx not found for background generation.")
 
-    import joblib
-    model_path = Path("models/daffodil_model.joblib")
-    if not model_path.exists():
+    model_paths = [
+        PROJECT_ROOT / "models" / "daffodil_model.joblib",
+        Path("models/daffodil_model.joblib"),
+    ]
+    model_path = next((p for p in model_paths if p.exists()), None)
+    if model_path is None:
         raise FileNotFoundError("models/daffodil_model.joblib not found.")
 
     pipeline = joblib.load(model_path)
@@ -128,6 +148,12 @@ def get_daffodil_background_data() -> np.ndarray:
 
     np.random.seed(RANDOM_STATE)
     background_summary = shap.kmeans(X_train_trans, k=15)
+
+    try:
+        joblib.dump(background_summary, PROJECT_ROOT / "models" / "daffodil_background.joblib")
+    except Exception:
+        pass
+
     return background_summary
 
 

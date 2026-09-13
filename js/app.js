@@ -311,11 +311,19 @@
 
     // 1. Try Live Python Vercel Function Endpoint
     try {
-      const response = await fetch('/api/predict', {
+      let response = await fetch('/api/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(rawInputs),
       });
+
+      if (!response.ok && response.status === 404) {
+        response = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rawInputs),
+        });
+      }
 
       if (response.ok) {
         const data = await response.json();

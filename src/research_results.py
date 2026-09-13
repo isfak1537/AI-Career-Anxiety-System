@@ -13,8 +13,10 @@ STRICTLY FROZEN:
 - Preserves the frozen Daffodil reference ROC-AUC of 0.7418 while noting the 0.7413 reproduction.
 """
 
+import os
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
+
 from typing import Dict, Any, Tuple
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -238,11 +240,13 @@ def get_secondary_metrics_table() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def create_metric_comparison_figure(metric_key: str) -> Tuple[plt.Figure, str]:
+def create_metric_comparison_figure(metric_key: str) -> Tuple[Any, str]:
     """
     Creates an academic-grade bar chart comparing a specific metric across cohorts.
     metric_key: 'f1', 'roc_auc', or 'mcc'
     """
+    import matplotlib.pyplot as plt
+
     cohorts = ["Overall", "Public", "Private", "Daffodil"]
     colors = ["#2b5c8f", "#d95f02", "#7570b3", "#1b9e77"]
 

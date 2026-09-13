@@ -11,6 +11,9 @@ import sys
 from pathlib import Path
 from typing import Dict, Any, Tuple, Optional
 
+# Ensure writable matplotlib config directory for serverless environments
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
+
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,6 +24,12 @@ import streamlit as st
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+# Expose ASGI application instance for Vercel Functions Python runtime
+try:
+    from api.index import app as app
+except Exception:
+    app = None
 
 from src.config import (
     FINAL_FEATURES_17,

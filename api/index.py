@@ -9,11 +9,18 @@ from functools import lru_cache
 import os
 from pathlib import Path
 import sys
+import traceback
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException
+# Ensure writable matplotlib config directory for serverless environments
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 import joblib
+import numpy as np
 import pandas as pd
 from pydantic import BaseModel, Field
 
@@ -57,11 +64,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATHS = {
-    "overall": PROJECT_ROOT / "models" / "overall_model.joblib",
-    "public": PROJECT_ROOT / "models" / "public_model.joblib",
-    "private": PROJECT_ROOT / "models" / "private_model.joblib",
-    "daffodil": PROJECT_ROOT / "models" / "daffodil_model.joblib",
+# Global exception handler returning JSON
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    tb = traceback.format_exc()
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": str(exc),
+            "error_type": exc.__class__.__name__,
+            "traceback": tb.splitlines()[-6:],
+        },
+    )
+
+# Static file mounts (if directories exist in deployment bundle)
+css_dir = PROJECT_ROOT / "css"
+if css_dir.is_dir():
+    app.mount("/css", StaticFiles(directory=str(css_dir)), name="css")
+
+js_dir = PROJECT_ROOT / "js"
+if js_dir.is_dir():
+    app.mount("/js", StaticFiles(directory=str(js_dir)), name="js")
+
+
+MODEL_FILENAMES = {
+    "overall": "overall_model.joblib",
+    "public": "public_model.joblib",
+    "private": "private_model.joblib",
+    "daffodil": "daffodil_model.joblib",
 }
 
 MODEL_NAMES = {
@@ -74,13 +105,22 @@ MODEL_NAMES = {
 
 @lru_cache(maxsize=4)
 def get_model(cohort: str):
-    """Cached model loader for Vercel Serverless Function instances."""
+    """Cached model loader for Vercel Serverless Function instances with multiple path fallbacks."""
     cohort_key = cohort.lower()
-    if cohort_key not in MODEL_PATHS:
-        raise ValueError(f"Unknown cohort: {cohort_key}. Available: {list(MODEL_PATHS.keys())}")
-    filepath = MODEL_PATHS[cohort_key]
-    if not filepath.exists():
-        raise FileNotFoundError(f"Model artifact not found at {filepath}")
+    if cohort_key not in MODEL_FILENAMES:
+        raise ValueError(f"Unknown cohort: {cohort_key}. Available: {list(MODEL_FILENAMES.keys())}")
+    
+    filename = MODEL_FILENAMES[cohort_key]
+    candidate_paths = [
+        PROJECT_ROOT / "models" / filename,
+        Path("models") / filename,
+        Path("/var/task/models") / filename,
+    ]
+    
+    filepath = next((p for p in candidate_paths if p.exists()), None)
+    if filepath is None:
+        raise FileNotFoundError(f"Model artifact not found for '{cohort_key}'. Looked in: {[str(p) for p in candidate_paths]}")
+    
     return joblib.load(filepath)
 
 
@@ -114,21 +154,35 @@ class StudentProfile(BaseModel):
 
 
 # =========================================================================
-# ENDPOINTS
+# ENDPOINTS (Dual-routed for /api/* and /* compatibility)
 # =========================================================================
+@app.get("/", include_in_schema=False)
+def read_root():
+    index_file = PROJECT_ROOT / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    return {
+        "status": "online",
+        "system": "AI-Induced Career Anxiety Prediction API",
+        "docs": "/api/docs",
+    }
+
+
 @app.get("/api")
 @app.get("/api/health")
+@app.get("/health")
 def health_check():
     return {
         "status": "online",
         "runtime": "Vercel Python Functions",
         "python_version": sys.version.split()[0],
         "system": "AI-Induced Career Anxiety Prediction System",
-        "available_cohorts": list(MODEL_PATHS.keys()),
+        "available_cohorts": list(MODEL_FILENAMES.keys()),
     }
 
 
 @app.get("/api/benchmarks")
+@app.get("/benchmarks")
 def get_benchmarks():
     return {
         "frozen_benchmark": FROZEN_BENCHMARK_RESULTS,
@@ -139,6 +193,7 @@ def get_benchmarks():
 
 
 @app.post("/api/predict")
+@app.post("/predict")
 def predict_student(profile: StudentProfile):
     try:
         raw_dict = profile.model_dump()
@@ -147,7 +202,7 @@ def predict_student(profile: StudentProfile):
         auto_cohort = resolve_cohort(profile.university)
         selected_cohort = override.lower() if override and override != "auto" else auto_cohort
 
-        if selected_cohort not in MODEL_PATHS:
+        if selected_cohort not in MODEL_FILENAMES:
             selected_cohort = auto_cohort
 
         # 1. Feature Engineering
@@ -175,9 +230,21 @@ def predict_student(profile: StudentProfile):
                 "input_value": str(raw_val),
                 "contribution": round(float(v), 5),
                 "abs_contribution": round(abs(float(v)), 5),
-                "direction": "Increases Anxiety" if v >= 0 else "Mitigates Anxiety",
+                "direction": "Increases Anxiety" if float(v) >= 0 else "Mitigates Anxiety",
             })
         ranked_features.sort(key=lambda x: x["abs_contribution"], reverse=True)
+
+        # Safe serialization of engineered features dictionary
+        engineered_dict = {}
+        for col, val in X.iloc[0].items():
+            if pd.isna(val):
+                engineered_dict[col] = None
+            elif isinstance(val, (np.integer, int)):
+                engineered_dict[col] = int(val)
+            elif isinstance(val, (np.floating, float)):
+                engineered_dict[col] = round(float(val), 4)
+            else:
+                engineered_dict[col] = str(val)
 
         return {
             "success": True,
@@ -192,8 +259,16 @@ def predict_student(profile: StudentProfile):
             },
             "top_drivers": ranked_features[:5],
             "all_features_ranked": ranked_features,
-            "engineered_features": X.iloc[0].to_dict(),
+            "engineered_features": engineered_dict,
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        tb = traceback.format_exc()
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": str(e),
+                "type": e.__class__.__name__,
+                "traceback": tb.splitlines()[-4:],
+            }
+        )

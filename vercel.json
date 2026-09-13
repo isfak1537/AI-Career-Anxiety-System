@@ -4,7 +4,10 @@
   "cleanUrls": true,
   "functions": {
     "api/index.py": {
-      "excludeFiles": "{tests/**,__tests__/**,**/*.test.py,**/test_*.py,fixtures/**,testdata/**,Career_Anxiety_due_to_AI.xlsx,final_all(1).ipynb,*.md}"
+      "excludeFiles": "{tests/**,__tests__/**,**/*.test.py,**/test_*.py,fixtures/**,testdata/**,final_all(1).ipynb,*.md}"
+    },
+    "app.py": {
+      "excludeFiles": "{tests/**,__tests__/**,**/*.test.py,**/test_*.py,fixtures/**,testdata/**,final_all(1).ipynb,*.md}"
     }
   },
   "rewrites": [
