@@ -1,0 +1,168 @@
+{
+  "training_timestamp_utc": "2026-09-12T13:55:26.017907+00:00",
+  "random_state": 42,
+  "test_size": 0.2,
+  "features": {
+    "total_count": 17,
+    "final_features_17": [
+      "department",
+      "career_path",
+      "age",
+      "gender",
+      "academic_year",
+      "ai_knowledge",
+      "ai_replace_jobs",
+      "ai_takeover_time",
+      "ai_future_perspective",
+      "Total_AI_Tools",
+      "Uses_Text_Gen",
+      "Uses_Coding_AI",
+      "Uses_Creative_AI",
+      "Threat_Perception",
+      "Perceived_Urgency",
+      "Risk_Knowledge_Gap",
+      "Age_Year_Ratio"
+    ],
+    "categorical_features": [
+      "department",
+      "career_path"
+    ],
+    "numerical_features": [
+      "age",
+      "gender",
+      "academic_year",
+      "ai_knowledge",
+      "ai_replace_jobs",
+      "ai_takeover_time",
+      "ai_future_perspective",
+      "Total_AI_Tools",
+      "Uses_Text_Gen",
+      "Uses_Coding_AI",
+      "Uses_Creative_AI",
+      "Threat_Perception",
+      "Perceived_Urgency",
+      "Risk_Knowledge_Gap",
+      "Age_Year_Ratio"
+    ]
+  },
+  "target_mapping": {
+    "No Anxiety": 0,
+    "Low": 0,
+    "Medium": 1,
+    "High": 1
+  },
+  "models": {
+    "Overall": {
+      "cohort": "Overall",
+      "model_name": "Gradient Boosting",
+      "artifact_file": "overall_model.joblib",
+      "estimator_class": "GradientBoostingClassifier",
+      "random_state": 42,
+      "train_row_count": 1628,
+      "test_row_count": 408,
+      "test_metrics": {
+        "accuracy": 0.6765,
+        "precision": 0.6885,
+        "recall": 0.9529,
+        "f1": 0.7994,
+        "roc_auc": 0.5759,
+        "mcc": 0.0984,
+        "cohen_kappa": 0.065
+      },
+      "reference_notebook_metrics": {
+        "F1": 0.7994,
+        "ROC-AUC": 0.5759,
+        "MCC": 0.0984
+      },
+      "metric_delta": {
+        "delta_f1": -0.0,
+        "delta_roc_auc": -0.0,
+        "delta_mcc": 0.0
+      }
+    },
+    "Public": {
+      "cohort": "Public",
+      "model_name": "Gradient Boosting",
+      "artifact_file": "public_model.joblib",
+      "estimator_class": "GradientBoostingClassifier",
+      "random_state": 42,
+      "train_row_count": 694,
+      "test_row_count": 174,
+      "test_metrics": {
+        "accuracy": 0.6379,
+        "precision": 0.6646,
+        "recall": 0.9316,
+        "f1": 0.7758,
+        "roc_auc": 0.5199,
+        "mcc": -0.0671,
+        "cohen_kappa": -0.0422
+      },
+      "reference_notebook_metrics": {
+        "F1": 0.7758,
+        "ROC-AUC": 0.5199,
+        "MCC": -0.0671
+      },
+      "metric_delta": {
+        "delta_f1": 0.0,
+        "delta_roc_auc": -0.0,
+        "delta_mcc": -0.0
+      }
+    },
+    "Private": {
+      "cohort": "Private",
+      "model_name": "Gradient Boosting",
+      "artifact_file": "private_model.joblib",
+      "estimator_class": "GradientBoostingClassifier",
+      "random_state": 42,
+      "train_row_count": 934,
+      "test_row_count": 234,
+      "test_metrics": {
+        "accuracy": 0.6966,
+        "precision": 0.7115,
+        "recall": 0.9308,
+        "f1": 0.8065,
+        "roc_auc": 0.6841,
+        "mcc": 0.1943,
+        "cohen_kappa": 0.1581
+      },
+      "reference_notebook_metrics": {
+        "F1": 0.8065,
+        "ROC-AUC": 0.6841,
+        "MCC": 0.1943
+      },
+      "metric_delta": {
+        "delta_f1": 0.0,
+        "delta_roc_auc": -0.0,
+        "delta_mcc": -0.0
+      }
+    },
+    "Daffodil": {
+      "cohort": "Daffodil",
+      "model_name": "Performance Soft Voting",
+      "artifact_file": "daffodil_model.joblib",
+      "estimator_class": "VotingClassifier",
+      "random_state": 42,
+      "train_row_count": 556,
+      "test_row_count": 139,
+      "test_metrics": {
+        "accuracy": 0.705,
+        "precision": 0.7545,
+        "recall": 0.8557,
+        "f1": 0.8019,
+        "roc_auc": 0.7413,
+        "mcc": 0.2405,
+        "cohen_kappa": 0.2333
+      },
+      "reference_notebook_metrics": {
+        "F1": 0.8019,
+        "ROC-AUC": 0.7418,
+        "MCC": 0.2405
+      },
+      "metric_delta": {
+        "delta_f1": 0.0,
+        "delta_roc_auc": -0.0005,
+        "delta_mcc": -0.0
+      }
+    }
+  }
+}

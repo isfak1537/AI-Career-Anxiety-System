@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Career Anxiety Prediction System | Undergraduate Research Defense</title>
+  <meta name="description" content="An empirical machine learning decision-support system predicting AI-induced career anxiety among university students across public and private cohorts in Bangladesh." />
+  <meta name="theme-color" content="#0a0d14" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Ambient Animated Lighting -->
+  <div class="bg-ambient" aria-hidden="true">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+  </div>
+
+  <!-- Site Sticky Header -->
+  <header class="site-header" id="siteHeader">
+    <div class="app-container" style="padding-bottom: 0;">
+      <div class="header-inner">
+        
+        <!-- Brand Identity -->
+        <div class="brand-wrapper">
+          <div class="brand-icon" aria-hidden="true">🎓</div>
+          <div>
+            <div class="brand-title">
+              AI Career Anxiety
+              <span class="brand-badge">Phase 3 · Defense Prototype</span>
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-muted);">
+              Undergraduate Capstone Research | Computer Science & Engineering
+            </div>
+          </div>
+        </div>
+
+        <!-- Cohort Model Status Chips -->
+        <div class="cohort-pill-group" id="cohortStatusChips">
+          <div class="cohort-status-chip" id="chipOverall"><span class="status-dot"></span>Overall: GB-100</div>
+          <div class="cohort-status-chip" id="chipPublic"><span class="status-dot"></span>Public: GB-100</div>
+          <div class="cohort-status-chip" id="chipPrivate"><span class="status-dot"></span>Private: GB-100</div>
+          <div class="cohort-status-chip" id="chipDaffodil"><span class="status-dot"></span>Daffodil: Ensemble</div>
+        </div>
+
+        <!-- Header Actions: Theme Switcher -->
+        <div class="header-actions">
+          <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme" aria-label="Toggle Dark / Light Theme">
+            <span id="themeToggleIcon">☀️</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Wrapper -->
+  <main class="app-container" id="mainApp">
+
+    <!-- Hero Banner -->
+    <section class="hero-banner" id="heroBanner">
+      <div class="hero-tag">
+        <span>🔬 Empirical Survey Machine Learning System</span>
+        <span>•</span>
+        <span>N = 2,036 Analytical Sample</span>
+      </div>
+      <h1 class="hero-title">
+        AI-Induced Career Anxiety <span>Prediction System</span>
+      </h1>
+      <p class="hero-subtitle">
+        A leak-safe comparative machine learning and SHAP explainability framework analyzing academic disciplines,
+        AI literacy, and perceived technological disruption among undergraduate university students in Bangladesh.
+      </p>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="main-nav" id="mainNavTabs" role="tablist" style="margin-bottom: 2rem;">
+      <button class="nav-tab active" id="tabBtnPrediction" role="tab" aria-selected="true" data-tab="tabPrediction">
+        <span>🎯</span> Student Assessment
+      </button>
+      <button class="nav-tab" id="tabBtnExplainability" role="tab" aria-selected="false" data-tab="tabExplainability">
+        <span>📊</span> SHAP Explainability
+      </button>
+      <button class="nav-tab" id="tabBtnBenchmark" role="tab" aria-selected="false" data-tab="tabBenchmark">
+        <span>🏆</span> Research Benchmarks
+      </button>
+      <button class="nav-tab" id="tabBtnMethodology" role="tab" aria-selected="false" data-tab="tabMethodology">
+        <span>🔬</span> Pipeline Methodology
+      </button>
+      <button class="nav-tab" id="tabBtnAbout" role="tab" aria-selected="false" data-tab="tabAbout">
+        <span>ℹ️</span> About & Limitations
+      </button>
+    </nav>
+
+    <!-- ====================================================================
+         TAB 1: STUDENT ASSESSMENT & PREDICTION ENGINE
+         ==================================================================== -->
+    <section class="tab-pane active" id="tabPrediction" role="tabpanel">
+      
+      <div class="prediction-layout">
+
+        <!-- Form Column -->
+        <div class="form-column">
+
+          <!-- Preset Profiles for Quick Defense Evaluation -->
+          <div class="presets-bar" id="presetsBar">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Quick Presets:</span>
+            <button type="button" class="preset-btn" id="presetCseHighRisk" data-preset="cse_high">💻 CSE Final Year (High AI Anxiety)</button>
+            <button type="button" class="preset-btn" id="presetPharmacyModerate" data-preset="pharmacy_mod">💊 Pharmacy 3rd Year (Moderate)</button>
+            <button type="button" class="preset-btn" id="presetEnglishLowRisk" data-preset="english_low">📚 English 2nd Year (Low Anxiety)</button>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <h2 class="card-title"><span>📝</span> Undergraduate Profile Assessment</h2>
+              <span class="card-subtitle">Exact 17 Analytical Features</span>
+            </div>
+
+            <form id="predictionForm" autocomplete="off">
+
+              <!-- Section 1: Institutional & Demographics -->
+              <div class="form-section">
+                <div class="section-label">1. Institutional & Demographic Profile</div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label for="universitySelect">University / Institution</label>
+                    <select class="form-select" id="universitySelect" required>
+                      <option value="Daffodil International University" selected>Daffodil International University (DIU)</option>
+                      <option value="American International University-Bangladesh">American International University-Bangladesh (AIUB)</option>
+                      <option value="University of Dhaka">University of Dhaka (DU)</option>
+                      <option value="Jahangirnagar University">Jahangirnagar University (JU)</option>
+                      <option value="Chittagong University of Engineering and Technology">Chittagong Univ. of Engineering & Tech (CUET)</option>
+                      <option value="Other / Non-Surveyed Institution">Other / Non-Surveyed Institution</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="genderSelect">Gender</label>
+                    <select class="form-select" id="genderSelect" required>
+                      <option value="Male" selected>Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label for="academicYearSelect">Academic Year</label>
+                    <select class="form-select" id="academicYearSelect" required>
+                      <option value="2nd Year">2nd Year (Sophomore)</option>
+                      <option value="3rd Year" selected>3rd Year (Junior)</option>
+                      <option value="4th Year">4th Year (Senior / Final Year)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="ageInput">Chronological Age</label>
+                    <input type="number" class="form-control" id="ageInput" min="18" max="35" value="22" required />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 2: Discipline & Target Career Path -->
+              <div class="form-section">
+                <div class="section-label">2. Discipline & Target Career Path</div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label for="departmentSelect">Academic Department</label>
+                    <select class="form-select" id="departmentSelect" required>
+                      <option value="Department of Computer Science and Engineering" selected>Department of Computer Science and Engineering</option>
+                      <option value="Department of Software Engineering">Department of Software Engineering</option>
+                      <option value="Department of Computer Science & Engineering">Department of Computer Science & Engineering</option>
+                      <option value="Department of Pharmacy">Department of Pharmacy</option>
+                      <option value="Department of Computer Science">Department of Computer Science</option>
+                      <option value="Department of English">Department of English</option>
+                      <option value="Department of Electrical & Electronic Engineering">Department of Electrical & Electronic Engineering</option>
+                      <option value="Department of Management">Department of Management</option>
+                      <option value="Department of Business Administration">Department of Business Administration</option>
+                      <option value="Department of Business Economics">Department of Business Economics</option>
+                      <option value="Department of Nutrition & Food Engineering">Department of Nutrition & Food Engineering</option>
+                      <option value="Department of Law">Department of Law</option>
+                      <option value="Department of Economics">Department of Economics</option>
+                      <option value="Department of Civil Engineering">Department of Civil Engineering</option>
+                      <option value="Department of Textile Engineering">Department of Textile Engineering</option>
+                      <option value="Other Department">Other Department...</option>
+                    </select>
+                  </div>
+                  <div class="form-group" id="otherDeptWrapper" style="display: none;">
+                    <label for="otherDepartmentInput">Specify Custom Department</label>
+                    <input type="text" class="form-control" id="otherDepartmentInput" placeholder="e.g. Department of Biotechnology" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="careerSelect">Target Career Path</label>
+                    <select class="form-select" id="careerSelect" required>
+                      <option value="Software Engineer" selected>Software Engineer</option>
+                      <option value="Researcher">Researcher</option>
+                      <option value="Data Scientist">Data Scientist</option>
+                      <option value="Cyber Security Expert">Cyber Security Expert</option>
+                      <option value="Pharmacist">Pharmacist</option>
+                      <option value="Web Developer">Web Developer</option>
+                      <option value="Teacher">Teacher / Academician</option>
+                      <option value="Software Developer">Software Developer</option>
+                      <option value="Businessman">Businessman / Entrepreneur</option>
+                      <option value="Chartered Accountant">Chartered Accountant</option>
+                      <option value="Banker">Banker</option>
+                      <option value="Data Analyst">Data Analyst</option>
+                      <option value="UI/UX Designer">UI/UX Designer</option>
+                      <option value="AI Engineer">AI Engineer</option>
+                      <option value="Project Manager">Project Manager</option>
+                      <option value="Other Career Path">Other Career Path...</option>
+                    </select>
+                  </div>
+                  <div class="form-group" id="otherCareerWrapper" style="display: none;">
+                    <label for="otherCareerInput">Specify Custom Career Path</label>
+                    <input type="text" class="form-control" id="otherCareerInput" placeholder="e.g. Bioinformatician" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 3: AI Literacy, Timeline & Replacement Beliefs -->
+              <div class="form-section">
+                <div class="section-label">3. AI Knowledge, Timeline & Job Replacement Beliefs</div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label for="aiKnowledgeSelect">Self-Assessed AI Knowledge</label>
+                    <select class="form-select" id="aiKnowledgeSelect" required>
+                      <option value="None">None (No theoretical/practical literacy)</option>
+                      <option value="Low">Low (Basic awareness only)</option>
+                      <option value="Medium" selected>Medium (Proficient tool user)</option>
+                      <option value="High">High (Deep technical comprehension)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="aiReplaceJobsSelect">Do You Believe AI Will Replace Jobs?</label>
+                    <select class="form-select" id="aiReplaceJobsSelect" required>
+                      <option value="No">No</option>
+                      <option value="Partially" selected>Partially (Augmentation & displacement)</option>
+                      <option value="Fully">Fully (Comprehensive takeover)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="aiTakeoverTimeSelect">Estimated Timeline for Substantial AI Takeover</label>
+                  <select class="form-select" id="aiTakeoverTimeSelect" required>
+                    <option value="Never">Never</option>
+                    <option value="50+ years">50+ years</option>
+                    <option value="21–50 years">21–50 years</option>
+                    <option value="11–20 years">11–20 years</option>
+                    <option value="6–10 years" selected>6–10 years</option>
+                    <option value="1–5 years">1–5 years (Imminent)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="aiFuturePerspectiveSelect">AI Future Perspective (Displacement vs. Opportunity)</label>
+                  <select class="form-select" id="aiFuturePerspectiveSelect" required>
+                    <option value="I strongly believe AI cannot take over human activities and will be a helpful tool for humans.">I strongly believe AI cannot take over human activities and will be a helpful tool for humans.</option>
+                    <option value="I believe AI will mostly assist humans, with limited job replacement.">I believe AI will mostly assist humans, with limited job replacement.</option>
+                    <option value="I think AI will replace some human jobs but also create new opportunities." selected>I think AI will replace some human jobs but also create new opportunities.</option>
+                    <option value="I believe AI will significantly replace human jobs and create major challenges.">I believe AI will significantly replace human jobs and create major challenges.</option>
+                    <option value="I strongly believe AI will completely take over human jobs and pose serious threat to humanity.">I strongly believe AI will completely take over human jobs and pose serious threat to humanity.</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Section 4: AI Tool Adoption & Specific Threat -->
+              <div class="form-section">
+                <div class="section-label">4. AI Tool Usage & Threat Perception</div>
+                <div class="form-group">
+                  <label>Common AI Tools Used (Click to toggle)</label>
+                  <div class="tool-chips-container" id="toolChipsContainer">
+                    <span class="tool-chip selected" data-tool="ChatGPT">ChatGPT</span>
+                    <span class="tool-chip selected" data-tool="Copilot">Copilot</span>
+                    <span class="tool-chip" data-tool="Claude">Claude</span>
+                    <span class="tool-chip" data-tool="Gemini">Gemini</span>
+                    <span class="tool-chip" data-tool="Cursor">Cursor</span>
+                    <span class="tool-chip" data-tool="Quillbot">Quillbot</span>
+                    <span class="tool-chip" data-tool="Grammarly">Grammarly</span>
+                    <span class="tool-chip" data-tool="Deepseek">Deepseek</span>
+                    <span class="tool-chip" data-tool="Midjourney">Midjourney</span>
+                    <span class="tool-chip" data-tool="DALL-E">DALL-E</span>
+                    <span class="tool-chip" data-tool="Canva">Canva</span>
+                    <span class="tool-chip" data-tool="Stable Diffusion">Stable Diffusion</span>
+                    <span class="tool-chip" data-tool="Photomath">Photomath</span>
+                  </div>
+                </div>
+
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label for="additionalToolsInput">Additional AI Tools (Comma-separated)</label>
+                    <input type="text" class="form-control" id="additionalToolsInput" placeholder="e.g. Perplexity, ElevenLabs" />
+                  </div>
+                  <div class="form-group">
+                    <label for="aiToolPerceptionInput">Specific AI Tool Perceived as Direct Threat</label>
+                    <input type="text" class="form-control" id="aiToolPerceptionInput" value="ChatGPT" placeholder="Enter tool name or 'None'" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 5: Cohort Mapping & Override -->
+              <div class="form-section">
+                <div class="section-label">5. Research Model Cohort Selection</div>
+                <div class="cohort-callout" id="cohortCallout">
+                  <span>Institutional Cohort Auto-Resolved:</span>
+                  <span class="callout-badge" id="resolvedCohortBadge">Daffodil Cohort (Ensemble)</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="cohortOverrideSelect">Research Model Override (Optional)</label>
+                  <select class="form-select" id="cohortOverrideSelect">
+                    <option value="auto" selected>Auto (Use Institution-Mapped Cohort)</option>
+                    <option value="overall">Overall Cohort — Gradient Boosting (100 estimators)</option>
+                    <option value="public">Public University Cohort — Gradient Boosting (100 estimators)</option>
+                    <option value="private">Private University Cohort — Gradient Boosting (100 estimators)</option>
+                    <option value="daffodil">Daffodil International Univ — Soft Voting Ensemble</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn-predict" id="btnPredict">
+                <span>⚡</span> Predict Career Anxiety
+              </button>
+
+            </form>
+          </div>
+
+        </div>
+
+        <!-- Live Results Column -->
+        <div class="results-column">
+          <div class="results-panel">
+
+            <!-- Prediction Outcome Banner -->
+            <div class="prediction-outcome-banner outcome-banner-high" id="predictionOutcomeBanner">
+              <div class="outcome-icon" id="outcomeIcon">⚠️</div>
+              <div class="outcome-details">
+                <h3 id="outcomeTitle">Elevated AI Career Anxiety</h3>
+                <p id="outcomeSubtitle">Predicted Class 1: Elevated concern regarding AI workforce disruption.</p>
+              </div>
+            </div>
+
+            <!-- Radial Probability Gauge Card -->
+            <div class="glass-card gauge-card">
+              <div class="card-header" style="justify-content: center;">
+                <h3 class="card-title"><span>🧭</span> Model Risk Probability</h3>
+              </div>
+
+              <div class="gauge-svg-wrap">
+                <svg class="gauge-svg" viewBox="0 0 160 160">
+                  <circle class="gauge-bg" cx="80" cy="80" r="65"></circle>
+                  <circle class="gauge-fill" id="gaugeCircle" cx="80" cy="80" r="65" stroke-dasharray="408.4" stroke-dashoffset="100"></circle>
+                </svg>
+                <div class="gauge-center-text">
+                  <div class="gauge-percentage" id="gaugePercentage">89.7%</div>
+                  <div class="gauge-label" id="gaugeLabel">P(Class 1)</div>
+                </div>
+              </div>
+
+              <div class="metric-strip">
+                <div class="metric-tile">
+                  <div class="tile-label">Evaluating Model</div>
+                  <div class="tile-value" id="resModelName">Soft Voting</div>
+                </div>
+                <div class="metric-tile">
+                  <div class="tile-label">Cohort Pipeline</div>
+                  <div class="tile-value" id="resCohortName">Daffodil</div>
+                </div>
+              </div>
+
+              <div class="metric-strip">
+                <div class="metric-tile">
+                  <div class="tile-label">Decision Threshold</div>
+                  <div class="tile-value">0.50 (Standard)</div>
+                </div>
+                <div class="metric-tile">
+                  <div class="tile-label">Leak-Safe Space</div>
+                  <div class="tile-value" id="resFeatureDim">129 Dimensions</div>
+                </div>
+              </div>
+
+              <!-- Top Positive/Negative Risk Factor Pills -->
+              <div class="card-header" style="margin-top: 1.25rem; margin-bottom: 0.5rem;">
+                <h4 style="font-size: 0.88rem; font-weight: 700;">Key Attributed Drivers (SHAP)</h4>
+              </div>
+              <div class="risk-factor-list" id="quickRiskFactors">
+                <!-- Injected dynamically -->
+              </div>
+
+              <div style="margin-top: 1.25rem;">
+                <button type="button" class="btn-cta-explain" id="btnGoToExplain">
+                  Deep-Dive Feature Attributions (SHAP) →
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         TAB 2: SHAP FEATURE EXPLAINABILITY
+         ==================================================================== -->
+    <section class="tab-pane" id="tabExplainability" role="tabpanel">
+      
+      <div class="glass-card explain-chart-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>📈</span> SHAP Feature Contributions (Marginal Attributions)</h2>
+            <div class="card-subtitle">
+              Visualizes how individual student indicators shift the decision boundary toward or away from Class 1.
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="legend-color color-pos"></span>
+              <span>Pushes toward Elevated Anxiety (+ SHAP)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color color-neg"></span>
+              <span>Pushes away from Anxiety (− SHAP)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Responsive Interactive SVG Chart -->
+        <div class="shap-chart-wrapper">
+          <svg class="shap-chart-svg" id="shapChartSvg" viewBox="0 0 900 520"></svg>
+        </div>
+      </div>
+
+      <!-- Ranked Feature Table Card -->
+      <div class="glass-card">
+        <div class="card-header">
+          <h2 class="card-title"><span>📋</span> Ranked Feature Contribution Table (17 Research Variables)</h2>
+          <span class="card-subtitle">Sorted by Absolute Magnitude of Impact</span>
+        </div>
+
+        <div class="data-table-wrap">
+          <table class="modern-table" id="featuresRankTable">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Feature Name</th>
+                <th>Category</th>
+                <th>Student Input Value</th>
+                <th>SHAP Contribution</th>
+                <th>Directional Impact</th>
+              </tr>
+            </thead>
+            <tbody id="featuresRankTableBody">
+              <!-- Injected dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Academic & Mathematical Disclosure Expanders -->
+        <div style="margin-top: 1.5rem;">
+          <div class="modern-accordion">
+            <div class="accordion-header">
+              <span>📐 Theoretical Foundation: Additive Efficiency Axiom of SHAP</span>
+              <span class="accordion-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>
+                In cooperative game theory, Shapley values uniquely satisfy four fundamental axioms: <strong>Efficiency, Symmetry, Dummy Player, and Additivity</strong>.
+                Because the categorical variables (<em>Department</em> and <em>Career Path</em>) are transformed via one-hot dummy encoding inside a leak-safe <code>ColumnTransformer</code>,
+                their transformed dimensionality expands (e.g. 155 one-hot columns for Overall, 114 for Daffodil).
+              </p>
+              <p style="margin-top: 0.5rem;">
+                By the <strong>Additive Property of SHAP</strong>, summing the SHAP values across disjoint dummy indicator variables for a mutually exclusive categorical feature
+                yields the exact net marginal contribution of that categorical feature to the model output:
+              </p>
+              <div style="font-family: var(--font-mono); margin: 0.75rem 0; padding: 0.5rem; background: var(--bg-primary); border-radius: 4px;">
+                φ(Department) = ∑_{c ∈ Categories} φ(OneHot_{c})
+              </div>
+              <p>
+                This guarantees zero information loss while projecting attributions faithfully back to the 17 verified research features.
+              </p>
+            </div>
+          </div>
+
+          <div class="modern-accordion">
+            <div class="accordion-header">
+              <span>⚖️ Non-Causal Research Disclaimer</span>
+              <span class="accordion-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>
+                SHAP values indicate mathematical feature importance and marginal shift in the classifier's output score for a specific input configuration.
+                <strong>They do not establish causal etiology.</strong> A positive contribution for "Software Engineer" indicates that within the surveyed sample,
+                students pursuing software roles statistically reported higher career anxiety, not that software engineering causes anxiety.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         TAB 3: RESEARCH BENCHMARKS & MODEL COMPARISONS
+         ==================================================================== -->
+    <section class="tab-pane" id="tabBenchmark" role="tabpanel">
+      
+      <!-- Benchmark Cohort Cards -->
+      <div class="benchmark-grid" id="benchmarkGrid">
+        <!-- Injected dynamically from AI_CAREER_DATA -->
+      </div>
+
+      <!-- Primary Metrics Table -->
+      <div class="glass-card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <h2 class="card-title"><span>🏆</span> Primary Research Validation Table (Frozen Reference)</h2>
+          <span class="card-subtitle">Source: Final Capstone Benchmark (N = 2,036)</span>
+        </div>
+
+        <div class="data-table-wrap">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Cohort</th>
+                <th>Deployment Model</th>
+                <th>Test F1</th>
+                <th>ROC-AUC</th>
+                <th>MCC</th>
+                <th>10-Fold CV F1</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Overall Cohort</strong></td>
+                <td><code>Gradient Boosting (100 est)</code></td>
+                <td><span class="stat-val" style="color: #818cf8;">0.7994</span></td>
+                <td>0.5759</td>
+                <td>+0.0984</td>
+                <td>0.7992</td>
+                <td><span class="badge-tag badge-academic">Frozen Baseline</span></td>
+              </tr>
+              <tr>
+                <td><strong>Public University</strong></td>
+                <td><code>Gradient Boosting (100 est)</code></td>
+                <td><span class="stat-val" style="color: #818cf8;">0.7758</span></td>
+                <td style="color: #f87171;">0.5199 (Near-Chance)</td>
+                <td style="color: #f87171;">-0.0671 (Negative)</td>
+                <td>0.7839</td>
+                <td><span class="badge-tag badge-tools">Honest Audit</span></td>
+              </tr>
+              <tr>
+                <td><strong>Private University</strong></td>
+                <td><code>Gradient Boosting (100 est)</code></td>
+                <td><span class="stat-val" style="color: #818cf8;">0.8065</span></td>
+                <td><span class="stat-val" style="color: #34d399;">0.6841</span></td>
+                <td>+0.1943</td>
+                <td>0.7945</td>
+                <td><span class="badge-tag badge-academic">Superior AUC</span></td>
+              </tr>
+              <tr>
+                <td><strong>Daffodil Sub-Cohort (DIU)</strong></td>
+                <td><code>Performance Soft Voting Ensemble</code></td>
+                <td><span class="stat-val" style="color: #818cf8;">0.8019</span></td>
+                <td><span class="stat-val" style="color: #34d399;">0.7418</span></td>
+                <td><span class="stat-val" style="color: #34d399;">+0.2405</span></td>
+                <td><span class="stat-val" style="color: #34d399;">0.8298</span></td>
+                <td><span class="badge-tag badge-literacy">Top Generalization</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+          * Note: Daffodil reference ROC-AUC of 0.7418 is preserved from initial research runs; serialized model reproduction yields 0.7413 (delta = -0.0005, within cross-platform floating-point tolerance).
+        </div>
+      </div>
+
+      <!-- Secondary Metrics Table -->
+      <div class="glass-card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <h2 class="card-title"><span>📊</span> Secondary Classification Performance Metrics</h2>
+          <span class="card-subtitle">Comprehensive Diagnostic Profile</span>
+        </div>
+
+        <div class="data-table-wrap">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Cohort</th>
+                <th>Accuracy</th>
+                <th>Precision</th>
+                <th>Recall (Sensitivity)</th>
+                <th>Cohen's Kappa</th>
+                <th>Train Rows</th>
+                <th>Test Rows</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Overall</strong></td>
+                <td>67.65%</td>
+                <td>68.85%</td>
+                <td>95.29%</td>
+                <td>0.0650</td>
+                <td>1,628</td>
+                <td>408</td>
+              </tr>
+              <tr>
+                <td><strong>Public</strong></td>
+                <td>63.79%</td>
+                <td>66.46%</td>
+                <td>93.16%</td>
+                <td>-0.0422</td>
+                <td>694</td>
+                <td>174</td>
+              </tr>
+              <tr>
+                <td><strong>Private</strong></td>
+                <td>69.66%</td>
+                <td>71.15%</td>
+                <td>93.08%</td>
+                <td>0.1581</td>
+                <td>934</td>
+                <td>234</td>
+              </tr>
+              <tr>
+                <td><strong>Daffodil</strong></td>
+                <td>70.50%</td>
+                <td>75.45%</td>
+                <td>85.57%</td>
+                <td>0.2333</td>
+                <td>556</td>
+                <td>139</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Metric Visualizations Comparison SVG -->
+      <div class="glass-card">
+        <div class="card-header">
+          <h2 class="card-title"><span>📉</span> Cross-Cohort Metric Divergence (ROC-AUC & MCC)</h2>
+          <span class="card-subtitle">Reveals Institutional Sensitivity Under Class Imbalance</span>
+        </div>
+
+        <div class="shap-chart-wrapper">
+          <svg class="shap-chart-svg" id="benchmarkChartSvg" viewBox="0 0 900 360" style="min-height: 320px;"></svg>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         TAB 4: RESEARCH METHODOLOGY & PIPELINE INTEGRITY
+         ==================================================================== -->
+    <section class="tab-pane" id="tabMethodology" role="tabpanel">
+      
+      <div class="methodology-grid">
+
+        <!-- Card 1: Sample & Target Formulation -->
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title"><span>📂</span> 1. Dataset & Target Formulation</h3>
+          </div>
+          <div style="font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary);">
+            <p><strong>Source Survey Data:</strong> Gathered across undergraduate university students in Bangladesh via structured questionnaires (<code>Career_Anxiety_due_to_AI.xlsx</code>).</p>
+            <p style="margin-top: 0.5rem;"><strong>Raw Sample:</strong> 3,156 completed survey entries.</p>
+            <p style="margin-top: 0.5rem;"><strong>Inclusion Protocol:</strong> Restricting population exclusively to 2nd, 3rd, and 4th-year students actively engaged in major studies. 1st-year students ($N=1,120$) were excluded due to lack of career exposure.</p>
+            <p style="margin-top: 0.5rem;"><strong>Analytical Sample Size:</strong> <strong>2,036 students</strong>.</p>
+            <p style="margin-top: 0.5rem;"><strong>Binarized Target Operationalization:</strong></p>
+            <ul style="padding-left: 1.25rem; margin-top: 0.35rem;">
+              <li><strong>Class 0 (32.4%):</strong> <em>No Anxiety</em> + <em>Low</em></li>
+              <li><strong>Class 1 (67.6%):</strong> <em>Medium</em> + <em>High</em> (Elevated Career Anxiety)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 2: Leak-Safe Protocol -->
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title"><span>🛡️</span> 2. Leak-Safe Preprocessing Protocol</h3>
+          </div>
+          <div style="font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary);">
+            <p>To eliminate data leakage, preprocessing is strictly encapsulated inside <code>sklearn.compose.ColumnTransformer</code> within an end-to-end <code>Pipeline</code>:</p>
+            <div style="margin-top: 0.75rem;">
+              <strong>Numerical Pipeline:</strong>
+              <div class="formula-chip" style="display: block; margin: 0.35rem 0;">SimpleImputer(strategy='median') → StandardScaler()</div>
+            </div>
+            <div style="margin-top: 0.75rem;">
+              <strong>Categorical Pipeline:</strong>
+              <div class="formula-chip" style="display: block; margin: 0.35rem 0;">SimpleImputer(strategy='most_frequent') → OneHotEncoder(handle_unknown='ignore')</div>
+            </div>
+            <p style="margin-top: 0.75rem;">
+              <strong>Strict Zero-Leakage:</strong> All imputation medians and scaling parameters are fitted exclusively on the training split ($X_{\text{train}}$) and applied downstream to test and runtime inference without refitting.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 17 Verified Features Detailed Cards -->
+      <div class="glass-card">
+        <div class="card-header">
+          <h2 class="card-title"><span>🧪</span> The 17 Verified Predictive Features</h2>
+          <span class="card-subtitle">Extracted Faithfully from Experimental Analysis</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; margin-top: 1rem;">
+          
+          <div class="feature-desc-card">
+            <h4><span>Perceived_Urgency</span> <span class="formula-chip">replace × takeover</span></h4>
+            <p>Domain construct multiplying belief in job replacement (0–2) by the immediacy of the takeover timeline (0–5). Ranges 0 to 10.</p>
+          </div>
+
+          <div class="feature-desc-card">
+            <h4><span>Risk_Knowledge_Gap</span> <span class="formula-chip">future − knowledge</span></h4>
+            <p>Captures discordance between subjective threat perception (0–4) and technical literacy (0–3). Positive values indicate high fear with low literacy.</p>
+          </div>
+
+          <div class="feature-desc-card">
+            <h4><span>Age_Year_Ratio</span> <span class="formula-chip">age ÷ academic_year</span></h4>
+            <p>Normalizes student age against academic milestone (2, 3, or 4), highlighting delayed graduation or non-traditional progression.</p>
+          </div>
+
+          <div class="feature-desc-card">
+            <h4><span>Threat_Perception</span> <span class="formula-chip">NLP / Regex</span></h4>
+            <p>Binary indicator (0 or 1) based on whether the student articulated a specific career-threatening tool vs 'None' / unperceived.</p>
+          </div>
+
+          <div class="feature-desc-card">
+            <h4><span>Total_AI_Tools</span> <span class="formula-chip">Count(tools)</span></h4>
+            <p>Total count of distinct AI systems actively incorporated into the student's personal or academic workflow.</p>
+          </div>
+
+          <div class="feature-desc-card">
+            <h4><span>Tool Subtypes</span> <span class="formula-chip">Text / Code / Creative</span></h4>
+            <p>Three separate binary flags detecting use of generative text (ChatGPT/Claude), code generation (Copilot/Cursor), or creative tools (Midjourney/Canva).</p>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         TAB 5: ABOUT & METHODOLOGICAL LIMITATIONS
+         ==================================================================== -->
+    <section class="tab-pane" id="tabAbout" role="tabpanel">
+      
+      <div class="glass-card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <h2 class="card-title"><span>ℹ️</span> Undergraduate Final Year Capstone Research</h2>
+          <span class="card-subtitle">Department of Computer Science & Engineering</span>
+        </div>
+
+        <div style="font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary);">
+          <p>
+            <strong>Project Title:</strong> AI-Induced Career Anxiety Prediction Among University Students<br />
+            <strong>Focus:</strong> A Leak-Safe Comparative Machine Learning Decision-Support System Across Institutional Cohorts.
+          </p>
+          <p style="margin-top: 1rem;">
+            This web application serves as the interactive research demonstration prototype for our undergraduate capstone thesis defense.
+            It provides transparent, empirically reproducible machine learning inference and SHAP explainability grounded in primary survey data.
+          </p>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-header">
+          <h2 class="card-title"><span>⚠️</span> Methodological Limitations & Ethical Disclaimers</h2>
+          <span class="card-subtitle">Academic Research Scope & Boundaries</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1rem;">
+
+          <div>
+            <h4 style="font-size: 1rem; color: #f87171; margin-bottom: 0.35rem;">1. Strictly Non-Clinical & Non-Diagnostic Instrument</h4>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+              This system is <strong>not a medical, psychiatric, or psychological diagnostic tool</strong>.
+              The target variable reflects a single subjective Likert survey response operationalized into empirical groups:
+              Class 0 (No Anxiety / Low) vs Class 1 (Medium / High). It has not been calibrated against clinical psychometric scales (such as GAD-7)
+              and must never be used for psychiatric evaluation or patient triage.
+            </p>
+          </div>
+
+          <div>
+            <h4 style="font-size: 1rem; color: #fcd34d; margin-bottom: 0.35rem;">2. Observational & Associative Nature (Non-Causal)</h4>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+              Machine learning models identify statistical correlations and feature co-occurrences in the survey dataset.
+              <strong>They do not prove causal relationships.</strong> An elevated SHAP attribution does not indicate that AI perceptions cause clinical anxiety.
+            </p>
+          </div>
+
+          <div>
+            <h4 style="font-size: 1rem; color: #7dd3fc; margin-bottom: 0.35rem;">3. Survey Self-Reporting Biases</h4>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+              Data was collected through self-administered questionnaires. Results are subject to self-selection bias,
+              social desirability bias, and subjective variations in how students quantify their own AI knowledge.
+            </p>
+          </div>
+
+          <div>
+            <h4 style="font-size: 1rem; color: #c4b5fd; margin-bottom: 0.35rem;">4. Geographic & Cohort Specificity</h4>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+              The analytical cohort ($N=2,036$) represents undergraduate students enrolled in universities in Bangladesh.
+              Generalizing these empirical models to international populations or experienced professionals requires independent validation.
+            </p>
+          </div>
+
+          <div>
+            <h4 style="font-size: 1rem; color: #cbd5e1; margin-bottom: 0.35rem;">5. Nested Institutional Cohorts</h4>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+              Daffodil International University ($N=695$) is an institutional sub-cohort nested within the Private University cohort ($N=1,168$).
+              Their populations overlap and should not be interpreted as mutually exclusive datasets.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div class="footer-links">
+        <a href="#tabPrediction" class="footer-tab-link" data-tab="tabPrediction">Prediction</a>
+        <a href="#tabExplainability" class="footer-tab-link" data-tab="tabExplainability">Explainability</a>
+        <a href="#tabBenchmark" class="footer-tab-link" data-tab="tabBenchmark">Research Benchmarks</a>
+        <a href="#tabMethodology" class="footer-tab-link" data-tab="tabMethodology">Methodology</a>
+        <a href="#tabAbout" class="footer-tab-link" data-tab="tabAbout">Ethical Disclaimers</a>
+      </div>
+      <div>
+        AI Career Anxiety Prediction System · Final Year Capstone Research Defense<br />
+        Deployed natively on <strong>Vercel</strong> | Leak-Safe Machine Learning Pipeline Architecture
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Serialized Model Data & Inference Engine -->
+  <script src="js/model_data.js"></script>
+  <script src="js/inference.js"></script>
+  <!-- Application Controller -->
+  <script src="js/app.js"></script>
+</body>
+</html>
