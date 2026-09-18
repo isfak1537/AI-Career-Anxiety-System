@@ -814,16 +814,16 @@ def render_methodology_page():
         st.markdown("### 1. Dataset & Target Formulation")
         st.markdown(
             """
-            - **Source Survey Data:** Collected across undergraduate university students in Bangladesh via structured digital questionnaires (`Career_Anxiety_due_to_AI.xlsx`).
+            - **Source Survey Data:** Secondary survey dataset of undergraduate university students in Bangladesh (`Career_Anxiety_due_to_AI.xlsx`).
             - **Raw Records:** 3,156 completed survey entries.
             - **Inclusion / Exclusion Protocol:**
               - Included: 2nd, 3rd, and 4th-year students actively enrolled in academic programs.
-              - Excluded: 1st-year students ($N=1,120$) due to lack of academic and career immersion.
+              - Excluded: 1st-year students ($N=1,120$) filtered out to focus on senior undergraduates in active career transition.
             - **Analytical Sample Size:** **2,036 students** (Class 0: 660, Class 1: 1,376).
-            - **Target Operationalization:**
-              - Survey question: *"How much anxiety do you feel about AI affecting your future career?"*
+            - **Target Operationalization (`Anxiety_Label`):**
+              - Raw survey column: `career_anxiety` (*"How much anxiety do you feel about AI affecting your future career?"*)
               - Original Likert levels: `No Anxiety`, `Low`, `Medium`, `High`.
-              - **Binarized Target:**
+              - **Binarized Modeling Target (`Anxiety_Label`):**
                 - **Class 0:** `No Anxiety` + `Low` (32.4%)
                 - **Class 1:** `Medium` + `High` (67.6%, Elevated Career Anxiety)
             """
@@ -915,7 +915,7 @@ def render_about_page():
         ### Research Purpose & Scope
         This web application serves as an interactive research demonstration prototype developed for an undergraduate 
         final year capstone defense. The system demonstrates empirical machine learning prediction and SHAP-based 
-        model explainability grounded entirely in primary survey data gathered from undergraduate university students 
+        model explainability grounded in a secondary survey dataset of undergraduate university students 
         in Bangladesh.
         
         The objective is to analyze how student demographics, academic disciplines, self-reported AI literacy, 

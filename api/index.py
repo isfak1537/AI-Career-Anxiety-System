@@ -5,12 +5,17 @@ Provides real-time machine learning prediction and SHAP explainability endpoints
 backed directly by scikit-learn models and leak-safe pipeline preprocessors.
 """
 
+import logging
 from functools import lru_cache
 import os
 from pathlib import Path
 import sys
 import traceback
 from typing import Any, Dict, List, Optional
+
+# Configure application logger
+logger = logging.getLogger("api")
+logging.basicConfig(level=logging.INFO)
 
 # Ensure writable matplotlib config directory for serverless environments
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
@@ -64,17 +69,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global exception handler returning JSON
+# Global exception handler returning safe generic JSON (no tracebacks or implementation details exposed)
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    tb = traceback.format_exc()
+    logger.error("Unhandled server exception on %s: %s", request.url.path, traceback.format_exc())
     return JSONResponse(
         status_code=500,
         content={
             "success": False,
-            "error": str(exc),
-            "error_type": exc.__class__.__name__,
-            "traceback": tb.splitlines()[-6:],
+            "error": "Internal server error. Please try again later.",
         },
     )
 
@@ -257,18 +260,19 @@ def predict_student(profile: StudentProfile):
                 "probability": round(p_class_1, 5),
                 "risk_level": "Elevated Career Anxiety" if pred_class == 1 else "Low / No Anxiety",
             },
+            "explainability": {
+                "explainer_type": shap_result.get("explainer_type", "SHAP Explainer"),
+                "expected_value": round(float(shap_result.get("expected_value", 0.5)), 5),
+                "aggregated_shap": {k: round(float(v), 5) for k, v in shap_result.get("aggregated_shap", {}).items()},
+            },
             "top_drivers": ranked_features[:5],
             "all_features_ranked": ranked_features,
             "engineered_features": engineered_dict,
         }
 
     except Exception as e:
-        tb = traceback.format_exc()
+        logger.error("Error during prediction on cohort '%s': %s", selected_cohort if 'selected_cohort' in locals() else 'unknown', traceback.format_exc())
         raise HTTPException(
             status_code=500,
-            detail={
-                "error": str(e),
-                "type": e.__class__.__name__,
-                "traceback": tb.splitlines()[-4:],
-            }
+            detail="An internal error occurred during prediction. Please verify input parameters and try again."
         )

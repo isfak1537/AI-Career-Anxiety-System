@@ -68,7 +68,8 @@ def test_daffodil_roc_auc_discrepancy_documented():
     assert DAFFODIL_ROC_AUC_DISCREPANCY["frozen_reference"] == 0.7418
     assert DAFFODIL_ROC_AUC_DISCREPANCY["serialized_reproduction"] == 0.7413
     assert DAFFODIL_ROC_AUC_DISCREPANCY["difference"] == -0.0005
-    assert "variance arises from floating-point" in DAFFODIL_ROC_AUC_DISCREPANCY["explanation"]
+    assert "reproduction discrepancy of 0.0005 was observed" in DAFFODIL_ROC_AUC_DISCREPANCY["explanation"]
+    assert "both values are reported transparently" in DAFFODIL_ROC_AUC_DISCREPANCY["explanation"]
 
 
 def test_cohort_sample_sizes():
@@ -82,14 +83,20 @@ def test_cohort_sample_sizes():
     assert COHORT_DEMOGRAPHICS["Public"]["total_n"] == 868
     assert COHORT_DEMOGRAPHICS["Public"]["train_n"] == 694
     assert COHORT_DEMOGRAPHICS["Public"]["test_n"] == 174
+    assert COHORT_DEMOGRAPHICS["Public"]["class_0"] == 284
+    assert COHORT_DEMOGRAPHICS["Public"]["class_1"] == 584
 
     assert COHORT_DEMOGRAPHICS["Private"]["total_n"] == 1168
     assert COHORT_DEMOGRAPHICS["Private"]["train_n"] == 934
     assert COHORT_DEMOGRAPHICS["Private"]["test_n"] == 234
+    assert COHORT_DEMOGRAPHICS["Private"]["class_0"] == 376
+    assert COHORT_DEMOGRAPHICS["Private"]["class_1"] == 792
 
     assert COHORT_DEMOGRAPHICS["Daffodil"]["total_n"] == 695
     assert COHORT_DEMOGRAPHICS["Daffodil"]["train_n"] == 556
     assert COHORT_DEMOGRAPHICS["Daffodil"]["test_n"] == 139
+    assert COHORT_DEMOGRAPHICS["Daffodil"]["class_0"] == 211
+    assert COHORT_DEMOGRAPHICS["Daffodil"]["class_1"] == 484
 
 
 def test_cohort_nesting_relationship():

@@ -1,0 +1,36 @@
+# Local Streamlit & scripts
+app.py
+scripts/
+final_all(1).ipynb
+*.ipynb
+
+# Test suite and caches
+tests/
+fixtures/
+testdata/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Raw dataset files
+Career_Anxiety_due_to_AI.xlsx
+data/
+
+# Documentation and phase reports (keep README.md for repo view)
+PHASE*.md
+MODEL_AUDIT.md
+PROJECT_ANALYSIS.md
+DEFENSE_DEMO_GUIDE.md
+
+# Virtual environments and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+
+# System files
+.DS_Store
+.git*

@@ -16,7 +16,7 @@ Follow this structured walkthrough during the live project defense:
    streamlit run app.py
    ```
 2. Explain the system's purpose:
-   > *"This interactive research prototype demonstrates machine learning inference and SHAP explainability trained on primary survey data of undergraduate students in Bangladesh. It explores how student demographics, AI literacy, and perceived career disruption relate to self-reported career anxiety."*
+   > *"This interactive research prototype demonstrates machine learning inference and SHAP explainability trained on a secondary survey dataset of undergraduate students in Bangladesh. It explores how student demographics, AI literacy, and perceived career disruption relate to self-reported career anxiety."*
 
 ---
 
@@ -123,7 +123,7 @@ Follow this structured walkthrough during the live project defense:
 ## 3. Anticipated Examiner Questions & Model Answers
 
 ### Q1: Why did you exclude first-year students from the analytical dataset?
-> **Answer:** *"First-year university students ($N=1,120$) were excluded during data preprocessing because they have minimal academic immersion in their declared majors and lack exposure to industry hiring dynamics or professional career pathways. Including them would introduce noise into career anxiety modeling. The analytical cohort was restricted to 2nd, 3rd, and 4th-year students ($N=2,036$) who actively confront internship and graduate employment realities."*
+> **Answer:** *"First-year respondents ($N=1,120$) were excluded according to the predefined analytical population used in the research pipeline, which restricted the analytical population strictly to 2nd, 3rd, and 4th-year students ($N=2,036$) across surveyed universities."*
 
 ---
 
@@ -168,7 +168,7 @@ Follow this structured walkthrough during the live project defense:
 ---
 
 ### Q10: Why is the Daffodil ROC-AUC reported as 0.7418 in the notebook, but 0.7413 in the serialized model reproduction?
-> **Answer:** *"The difference is exactly 0.0005. Both the notebook and serialized model use identical training configurations, seed 42, and the exact same 600 decision trees across KNN, Random Forest, Extra Trees, and Gradient Boosting. Discrete classification metrics (Test F1 = 0.8019, Accuracy = 0.7050, MCC = 0.2405) match to 0.0000 exactness. The 0.0005 variance in ROC-AUC occurs because soft-voting averages continuous floating-point probability arrays across four distinct scikit-learn estimators, producing micro-level floating-point differences during threshold rank ordering. We document both numbers transparently."*
+> **Answer:** *"The serialized Daffodil model reproduces the discrete classification metrics exactly (Test F1 = 0.8019, Accuracy = 0.7050, and MCC = 0.2405) and yields ROC-AUC = 0.7413 versus the frozen notebook reference of 0.7418. The small ROC-AUC discrepancy of -0.0005 should be treated as a documented reproduction difference unless its exact cause is experimentally established. The actual tree ensemble comprises 700 tree estimators (RF 300 + ExtraTrees 300 + GB 100) plus KNN, operating under soft probability voting."*
 
 ---
 

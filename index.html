@@ -500,7 +500,7 @@
               <p>
                 SHAP values indicate mathematical feature importance and marginal shift in the classifier's output score for a specific input configuration.
                 <strong>They do not establish causal etiology.</strong> A positive contribution for "Software Engineer" indicates that within the surveyed sample,
-                students pursuing software roles statistically reported higher career anxiety, not that software engineering causes anxiety.
+                students pursuing software roles statistically reported higher career anxiety, not that pursuing software engineering is causally responsible for career anxiety.
               </p>
             </div>
           </div>
@@ -675,11 +675,12 @@
             <h3 class="card-title"><span>📂</span> 1. Dataset & Target Formulation</h3>
           </div>
           <div style="font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary);">
-            <p><strong>Source Survey Data:</strong> Gathered across undergraduate university students in Bangladesh via structured questionnaires (<code>Career_Anxiety_due_to_AI.xlsx</code>).</p>
+            <p><strong>Source Survey Data:</strong> Secondary survey dataset of undergraduate university students in Bangladesh (<code>Career_Anxiety_due_to_AI.xlsx</code>).</p>
             <p style="margin-top: 0.5rem;"><strong>Raw Sample:</strong> 3,156 completed survey entries.</p>
-            <p style="margin-top: 0.5rem;"><strong>Inclusion Protocol:</strong> Restricting population exclusively to 2nd, 3rd, and 4th-year students actively engaged in major studies. 1st-year students ($N=1,120$) were excluded due to lack of career exposure.</p>
+            <p style="margin-top: 0.5rem;"><strong>Inclusion Protocol:</strong> Restricting population exclusively to 2nd, 3rd, and 4th-year students actively engaged in major studies. 1st-year students ($N=1,120$) were filtered out to focus on senior undergraduates in active career transition.</p>
             <p style="margin-top: 0.5rem;"><strong>Analytical Sample Size:</strong> <strong>2,036 students</strong>.</p>
-            <p style="margin-top: 0.5rem;"><strong>Binarized Target Operationalization:</strong></p>
+            <p style="margin-top: 0.5rem;"><strong>Engineered Target Operationalization (<code>Anxiety_Label</code>):</strong></p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">Raw survey column <code>career_anxiety</code> binarized into:</p>
             <ul style="padding-left: 1.25rem; margin-top: 0.35rem;">
               <li><strong>Class 0 (32.4%):</strong> <em>No Anxiety</em> + <em>Low</em></li>
               <li><strong>Class 1 (67.6%):</strong> <em>Medium</em> + <em>High</em> (Elevated Career Anxiety)</li>
@@ -721,32 +722,32 @@
           
           <div class="feature-desc-card">
             <h4><span>Perceived_Urgency</span> <span class="formula-chip">replace × takeover</span></h4>
-            <p>Domain construct multiplying belief in job replacement (0–2) by the immediacy of the takeover timeline (0–5). Ranges 0 to 10.</p>
+            <p>An engineered composite feature multiplying belief in job replacement (0–2) by estimated takeover timeline (0–5). Not a validated latent psychological construct.</p>
           </div>
 
           <div class="feature-desc-card">
             <h4><span>Risk_Knowledge_Gap</span> <span class="formula-chip">future − knowledge</span></h4>
-            <p>Captures discordance between subjective threat perception (0–4) and technical literacy (0–3). Positive values indicate high fear with low literacy.</p>
+            <p>An engineered numerical difference between AI future-displacement perspective and self-assessed AI knowledge. Not a validated latent construct.</p>
           </div>
 
           <div class="feature-desc-card">
             <h4><span>Age_Year_Ratio</span> <span class="formula-chip">age ÷ academic_year</span></h4>
-            <p>Normalizes student age against academic milestone (2, 3, or 4), highlighting delayed graduation or non-traditional progression.</p>
+            <p>An engineered ratio of chronological age to academic year.</p>
           </div>
 
           <div class="feature-desc-card">
-            <h4><span>Threat_Perception</span> <span class="formula-chip">NLP / Regex</span></h4>
-            <p>Binary indicator (0 or 1) based on whether the student articulated a specific career-threatening tool vs 'None' / unperceived.</p>
+            <h4><span>Threat_Perception</span> <span class="formula-chip">Binary response indicator</span></h4>
+            <p>Indicates whether the respondent provided a substantive response to the AI-tool perception item. This is not a validated psychological threat-perception scale.</p>
           </div>
 
           <div class="feature-desc-card">
             <h4><span>Total_AI_Tools</span> <span class="formula-chip">Count(tools)</span></h4>
-            <p>Total count of distinct AI systems actively incorporated into the student's personal or academic workflow.</p>
+            <p>Number of AI tools reported in the comma-separated survey response.</p>
           </div>
 
           <div class="feature-desc-card">
             <h4><span>Tool Subtypes</span> <span class="formula-chip">Text / Code / Creative</span></h4>
-            <p>Three separate binary flags detecting use of generative text (ChatGPT/Claude), code generation (Copilot/Cursor), or creative tools (Midjourney/Canva).</p>
+            <p>Three separate binary flags detecting reported use of generative text (ChatGPT/Claude), code generation (Copilot/Cursor), or creative tools (Midjourney/Canva).</p>
           </div>
 
         </div>
@@ -772,7 +773,7 @@
           </p>
           <p style="margin-top: 1rem;">
             This web application serves as the interactive research demonstration prototype for our undergraduate capstone thesis defense.
-            It provides transparent, empirically reproducible machine learning inference and SHAP explainability grounded in primary survey data.
+            It provides transparent, empirically reproducible machine learning inference and SHAP explainability grounded in a secondary survey dataset.
           </p>
         </div>
       </div>

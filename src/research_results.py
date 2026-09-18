@@ -128,11 +128,9 @@ DAFFODIL_ROC_AUC_DISCREPANCY = {
     "serialized_reproduction": 0.7413,
     "difference": -0.0005,
     "explanation": (
-        "The serialized Daffodil Soft Voting model yields Test ROC-AUC = 0.7413, a trace difference "
-        "of 0.0005 compared to the notebook reported value of 0.7418. This minor variance arises "
-        "from floating-point probability averaging across 600 individual trees in the multi-model ensemble "
-        "during rank ordering. The discrete classification metrics (Test F1 = 0.8019, Accuracy = 0.7050, "
-        "and MCC = 0.2405) reproduce to 0.0000 exactness."
+        "A small reproduction discrepancy of 0.0005 was observed between the notebook reference and "
+        "serialized-model reproduction. The exact source of the discrepancy has not been independently "
+        "isolated; therefore, both values are reported transparently."
     ),
 }
 
@@ -147,6 +145,8 @@ COHORT_DEMOGRAPHICS: Dict[str, Dict[str, Any]] = {
         "class_0": 660,
         "class_1": 1376,
         "class_1_pct": 67.58,
+        "test_class_0": 132,
+        "test_class_1": 276,
         "description": "Full analytical dataset across all surveyed universities (2nd–4th year).",
         "is_subset": False,
         "parent_cohort": None,
@@ -155,9 +155,11 @@ COHORT_DEMOGRAPHICS: Dict[str, Dict[str, Any]] = {
         "total_n": 868,
         "train_n": 694,
         "test_n": 174,
-        "class_0": 298,
-        "class_1": 570,
-        "class_1_pct": 65.67,
+        "class_0": 284,
+        "class_1": 584,
+        "class_1_pct": 67.28,
+        "test_class_0": 57,
+        "test_class_1": 117,
         "description": "Students enrolled in public institutions (DU, JU, CUET, etc.).",
         "is_subset": True,
         "parent_cohort": "Overall",
@@ -166,9 +168,11 @@ COHORT_DEMOGRAPHICS: Dict[str, Dict[str, Any]] = {
         "total_n": 1168,
         "train_n": 934,
         "test_n": 234,
-        "class_0": 362,
-        "class_1": 806,
-        "class_1_pct": 69.01,
+        "class_0": 376,
+        "class_1": 792,
+        "class_1_pct": 67.81,
+        "test_class_0": 75,
+        "test_class_1": 159,
         "description": "Students enrolled in private institutions (DIU, AIUB, etc.).",
         "is_subset": True,
         "parent_cohort": "Overall",
@@ -180,6 +184,8 @@ COHORT_DEMOGRAPHICS: Dict[str, Dict[str, Any]] = {
         "class_0": 211,
         "class_1": 484,
         "class_1_pct": 69.64,
+        "test_class_0": 42,
+        "test_class_1": 97,
         "description": "Students specifically from Daffodil International University (nested inside Private).",
         "is_subset": True,
         "parent_cohort": "Private",
@@ -193,7 +199,8 @@ DATASET_OVERVIEW = {
     "feature_count": 17,
     "categorical_features": 2,
     "numerical_features": 15,
-    "target_column": "Career_Anxiety_due_to_AI",
+    "target_column": "Anxiety_Label",
+    "raw_target_column": "career_anxiety",
     "class_0_definition": "No Anxiety / Low",
     "class_1_definition": "Medium / High (Elevated Anxiety)",
     "split_protocol": "Stratified 80/20 Train/Test Split (random_state=42)",

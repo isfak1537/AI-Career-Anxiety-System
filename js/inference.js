@@ -1,7 +1,14 @@
 /**
  * inference.js
- * High-Performance Client-Side Inference & SHAP Explainability Engine
- * Faithfully replicates src/feature_engineering.py and scikit-learn Pipeline inference.
+ * Client-Side Inference & Feature Attribution Engine (Lightweight Offline Fallback)
+ * 
+ * IMPORTANT ARCHITECTURAL NOTE:
+ * This client-side module provides a lightweight offline approximation for demonstration purposes.
+ * It is NOT the authoritative reference model for the research study.
+ * The authoritative predictions and exact SHAP explanations are served by the Python FastAPI backend (/api/predict)
+ * using the serialized scikit-learn pipeline artifacts.
+ * For Daffodil, this client fallback evaluates an approximation (GB + 25 RF trees),
+ * whereas the authoritative deployment model is the 4-estimator VotingClassifier (KNN + RF 300 + ExtraTrees 300 + GB 100).
  */
 
 (function (window) {
@@ -30,7 +37,7 @@
   }
 
   /**
-   * Count comma-separated AI tools reported
+   * Number of AI tools reported in comma-separated survey response (counts entries without deduplication)
    */
   function countAITools(toolsStr) {
     if (!toolsStr || typeof toolsStr !== 'string') return 0;
@@ -40,7 +47,8 @@
   }
 
   /**
-   * Calculate binary threat perception indicator
+   * Binary response indicator: indicates whether respondent provided a substantive response.
+   * This is not a validated psychological threat-perception scale.
    */
   function calculateThreatPerception(val) {
     if (!val || typeof val !== 'string') return 0;
@@ -242,7 +250,9 @@
   }
 
   /**
-   * Compute exact additive feature attributions (Tree SHAP / Saabas path method)
+   * Compute heuristic additive feature attributions (Saabas path-difference method).
+   * Note: This is an offline client approximation, not exact SHAP.
+   * Authoritative SHAP values are computed by the Python backend via TreeExplainer/KernelExplainer.
    */
   function explainTransformed(cohortKey, xTrans, engineered) {
     const model = models[cohortKey];

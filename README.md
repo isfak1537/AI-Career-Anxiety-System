@@ -70,14 +70,17 @@ If you also wish to run the original Python Streamlit application (`app.py`):
 
 | Component | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Vercel Web App** | HTML5, Vanilla CSS, Vanilla JS | Instant global edge delivery on Vercel with 0ms cold starts |
-| **Inference Engine** | `js/inference.js` | 100% mathematical fidelity with scikit-learn pipelines & SHAP |
-| **Serialized Models** | `js/model_data.js` | Compact 324 KB bundle with 100 decision trees per cohort |
+| **Vercel Web App** | HTML5, Vanilla CSS, Vanilla JS | Instant global edge delivery on Vercel with responsive interactive UI |
+| **Authoritative Backend** | `api/index.py` (FastAPI) | Serverless scikit-learn pipeline inference & SHAP explainability |
+| **Serialized Pipelines** | `models/*.joblib` | Authoritative deployment models (Overall/Public/Private GB, Daffodil VotingClassifier) |
+| **Client Fallback** | `js/inference.js` | Lightweight client-side heuristic approximation for offline CDN fallback |
 | **Research Streamlit App**| Python, Streamlit, SHAP | Local and Streamlit Cloud academic presentation layer |
-| **Test Suite** | `pytest` (83 passed) | Automated unit & integration regression testing |
+| **Test Suite** | `pytest` (115 passed) | Automated regression, parity, and security validation testing |
+
+> *Note: Minimum compatible dependency versions are specified in `requirements.txt` and `pyproject.toml`.*
 
 ---
 
 ## 🔬 Research & Ethical Disclaimer
 
-This application is strictly a **non-clinical, non-diagnostic decision support research prototype** developed for undergraduate capstone defense. The target variable is an empirical survey grouping (*Class 0 = No/Low Anxiety*, *Class 1 = Medium/High Anxiety*) and has not been calibrated against clinical psychometric scales (such as GAD-7).
+This application is strictly a **non-clinical, non-diagnostic decision support research prototype** developed for undergraduate capstone defense. The model is trained on a **secondary survey dataset** of 2,036 analytical undergraduate records (following 1,120 first-year exclusions). The target variable is an empirical survey grouping (*Class 0 = No/Low Anxiety*, *Class 1 = Medium/High Anxiety*) and has not been calibrated against clinical psychometric scales (such as GAD-7). Output values represent associative statistical patterns and model-estimated probabilities, not causal determinations or clinical diagnoses.

@@ -2,7 +2,7 @@
 export_web_data.py
 Serializes all preprocessing transformers, model trees, and research benchmark data
 into a standalone JavaScript/JSON data module for native Vercel deployment.
-Guarantees zero-dependency, sub-millisecond client inference with mathematical fidelity.
+Provides zero-dependency, client-side approximation fallback data when the Python API is unavailable.
 """
 
 import json

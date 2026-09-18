@@ -1,7 +1,7 @@
 """
 Feature Engineering Module
 Faithfully implements the exact feature transformations, ordinal mappings,
-NLP/regex AI-tool indicators, threat perception, and composite ratios
+regex-based tool category indicators, binary response indicators, and composite features
 from final_all(1).ipynb.
 """
 
@@ -31,7 +31,8 @@ from .config import (
 
 def count_ai_tools(value) -> int:
     """
-    Count comma-separated AI tools reported by the student.
+    Number of AI tools reported in the comma-separated survey response.
+    Counts reported comma-separated entries without deduplication.
     Matches Step 2 and Step 10 Recovery logic from final_all(1).ipynb.
     """
     if pd.isna(value):
@@ -47,9 +48,11 @@ def count_ai_tools(value) -> int:
 
 def calculate_threat_perception(value) -> int:
     """
-    Binary threat perception indicator based on ai_tool_perception.
-    Matches the finalized Step 10 feature engineering recovery rule from final_all(1).ipynb:
+    Binary response indicator:
+    Indicates whether the respondent provided a substantive response to the AI-tool perception item.
     Returns 0 if null, empty, or generic non-threat ('none', "i don't know for now"), else 1.
+    This is not a validated psychological threat-perception scale.
+    Matches the finalized Step 10 feature engineering recovery rule from final_all(1).ipynb.
     """
     if pd.isna(value):
         return 0
@@ -76,7 +79,7 @@ def engineer_features(df_input: pd.DataFrame) -> pd.DataFrame:
     if RAW_TARGET_COLUMN in df.columns:
         df[TARGET_COLUMN] = df[RAW_TARGET_COLUMN].map(ANXIETY_MAP)
 
-    # 3. AI Tool NLP/Regex feature extraction
+    # 3. AI Tool category pattern matching (regex-based indicators)
     tools_text = df["ai_tools_used"].fillna("").astype(str).str.strip() if "ai_tools_used" in df.columns else pd.Series([""] * len(df))
 
     df["Total_AI_Tools"] = tools_text.apply(count_ai_tools)
@@ -93,7 +96,7 @@ def engineer_features(df_input: pd.DataFrame) -> pd.DataFrame:
         tools_text.str.contains(CREATIVE_AI_PATTERN, case=False, regex=True, na=False).astype(int)
     )
 
-    # 4. Threat Perception
+    # 4. Binary Threat Perception response indicator (not a validated psychological scale)
     if "ai_tool_perception" in df.columns:
         df["Threat_Perception"] = df["ai_tool_perception"].apply(calculate_threat_perception)
     else:
@@ -154,10 +157,12 @@ def engineer_features(df_input: pd.DataFrame) -> pd.DataFrame:
     else:
         future_numeric = pd.Series([np.nan] * len(df))
 
-    # 6. Composite domain interaction features
+    # 6. Engineered composite features (interaction & difference indicators)
+    # Perceived_Urgency: engineered composite feature (ai_replace_jobs * ai_takeover_time)
     df["Perceived_Urgency"] = replace_numeric * takeover_numeric
+    # Risk_Knowledge_Gap: engineered numerical difference (ai_future_perspective - ai_knowledge)
     df["Risk_Knowledge_Gap"] = future_numeric - knowledge_numeric
-
+    # Age_Year_Ratio: engineered ratio of chronological age to academic year
     raw_age = pd.to_numeric(df["age"], errors="coerce") if "age" in df.columns else pd.Series([np.nan] * len(df))
     df["Age_Year_Ratio"] = raw_age / academic_numeric
 

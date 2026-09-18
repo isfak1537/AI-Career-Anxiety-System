@@ -19,7 +19,7 @@ from .config import (
 def filter_analytical_population(df: pd.DataFrame) -> pd.DataFrame:
     """
     Restrict survey records strictly to 2nd, 3rd, and 4th year undergraduates.
-    Excludes 1st-year students (who have not yet encountered core career prep/internship pressures).
+    First-year respondents were excluded according to the predefined analytical population used in the research pipeline.
     Works on either raw academic_year strings or mapped numeric values [2, 3, 4].
     """
     df_clean = df.copy()

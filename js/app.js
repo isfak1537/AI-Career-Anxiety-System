@@ -337,6 +337,8 @@
             modelName: data.model_name,
           },
           explainability: {
+            explainerType: data.explainability?.explainer_type || "Authoritative SHAP Explainer",
+            expectedValue: data.explainability?.expected_value,
             featureRows: data.all_features_ranked.map(f => ({
               key: f.key,
               displayName: f.display_name,
@@ -350,6 +352,7 @@
           engineered: data.engineered_features,
           rawInputs,
           fromPythonBackend: true,
+          isApproximation: false,
         };
 
         lastPredictionResult = serverResult;
@@ -359,11 +362,16 @@
         return;
       }
     } catch (err) {
-      // Backend not running / static mode — proceed to client inference engine
+      // Backend not running / static CDN mode — proceed to client inference engine
     }
 
-    // 2. Client-Side Instant Inference Engine (Fallback / Static CDN Mode)
+    // 2. Client-Side Inference Engine (Heuristic Fallback / Static CDN Mode)
     const clientResult = window.CareerAnxietyInference.runPrediction(rawInputs, override);
+    clientResult.fromPythonBackend = false;
+    clientResult.isApproximation = true;
+    if (clientResult.explainability) {
+      clientResult.explainability.explainerType = "Heuristic Path-Difference Approximation (Client Fallback)";
+    }
     lastPredictionResult = clientResult;
 
     displayPredictionResults(clientResult);
@@ -383,9 +391,16 @@
     predictionOutcomeBanner.className = `prediction-outcome-banner ${isHigh ? 'outcome-banner-high' : 'outcome-banner-low'}`;
     outcomeIcon.textContent = isHigh ? '⚠️' : '✅';
     outcomeTitle.textContent = isHigh ? 'Elevated AI Career Anxiety' : 'Low / No AI Career Anxiety';
-    outcomeSubtitle.textContent = isHigh
-      ? `Predicted Class 1: Empirical features strongly align with elevated self-reported career concern.`
-      : `Predicted Class 0: Features align with resilient, low-anxiety academic perception.`;
+    
+    if (result.isApproximation) {
+      outcomeSubtitle.textContent = isHigh
+        ? `Predicted Class 1 [Client Approximation]: Empirical features align with elevated self-reported career concern. (Authoritative inference served by Python backend).`
+        : `Predicted Class 0 [Client Approximation]: Features align with low-anxiety self-report. (Authoritative inference served by Python backend).`;
+    } else {
+      outcomeSubtitle.textContent = isHigh
+        ? `Predicted Class 1 [Authoritative Model]: Empirical features strongly align with elevated self-reported career concern.`
+        : `Predicted Class 0 [Authoritative Model]: Features align with resilient, low-anxiety academic perception.`;
+    }
 
     // Radial SVG Gauge
     gaugePercentage.textContent = `${pct}%`;
@@ -398,7 +413,8 @@
     gaugeCircle.style.strokeDashoffset = offset;
 
     // Metadata
-    resModelName.textContent = prediction.modelName.split('(')[0].trim();
+    const modeBadge = result.isApproximation ? ' [Client Approx]' : ' [Authoritative]';
+    resModelName.textContent = prediction.modelName.split('(')[0].trim() + modeBadge;
     resCohortName.textContent = cohort.toUpperCase();
 
     const dims = { overall: 170, public: 117, private: 145, daffodil: 129 };

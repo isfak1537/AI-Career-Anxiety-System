@@ -395,19 +395,20 @@ Cross-referencing LASSO stability and SHAP TreeExplainer highlights the dominant
 
 ---
 
-## 10. Deployment Gaps (What is Missing for Deployment / Inference)
+## 10. Historical Pre-Implementation Deployment Gaps (Notebook Analysis vs Implemented System)
 
-While the notebook establishes a comprehensive research analysis, it exists solely as an experimental, in-memory Colab artifact. The following gaps must be resolved for a functional prototype:
+> [!NOTE]
+> **Historical Context:** The table below documents the architectural limitations identified during the initial audit of the original Colab research notebook (`final_all(1).ipynb`). **All seven gaps have been systematically resolved** in the production engineering implementation via serialized scikit-learn pipelines, the authoritative FastAPI backend (`/api/predict`), SHAP explainability engines, and the verified test suite.
 
-| # | Deployment Gap | Description | Impact if Unresolved |
-|---|---|---|---|
-| **1** | **No Serialized Model Artifacts** | The trained models exist only as runtime Python objects in Colab; no `.joblib` or `.pkl` files were saved to disk. | Cannot make live predictions without retraining from scratch. |
-| **2** | **No Serialized Preprocessor** | The fitted `ColumnTransformer` (with median imputers, standard scalers, and 155 one-hot categorical mappings) was not saved. | Raw inputs cannot be transformed into the required 170-dim feature vector. |
-| **3** | **No Standalone Inference Engine** | The feature engineering pipeline (text parsing, regex matchers, composite feature arithmetic) is scattered across notebook cells. | No single function or module exists that takes raw survey answers and returns a risk score. |
-| **4** | **No Cohort Routing Mechanism** | The system needs the ability to route inference dynamically (e.g., evaluate a student using the **Overall Master Model** or their specific **Institution Cohort Model**). | Unable to demonstrate institutional comparison during live evaluation. |
-| **5** | **No Real-Time Explainability** | SHAP explanations were generated statically for the research thesis. Individual students cannot see why their risk score was computed. | Lack of personalized feedback or transparent risk breakdown. |
-| **6** | **No Interactive Web Interface** | No modern UI exists for students to take the assessment, nor for thesis evaluators to inspect model comparisons. | Cannot be demonstrated or evaluated as a final year prototype. |
-| **7** | **No Automated Verification Suite** | No automated tests verifying that the deployed pipeline exactly reproduces the notebook's test metrics. | Risk of silent preprocessing discrepancies. |
+| # | Historical Gap (Notebook) | Description (Original State) | Impact if Unresolved | Implementation Status |
+|---|---|---|---|---|
+| **1** | **No Serialized Model Artifacts** | The trained models existed only as in-memory Python objects in Colab; no `.joblib` files were saved to disk. | Cannot make live predictions without retraining from scratch. | **RESOLVED** (`models/*_model.joblib`) |
+| **2** | **No Serialized Preprocessor** | The fitted `ColumnTransformer` (median imputers, standard scalers, and one-hot categorical mappings) was not saved. | Raw inputs cannot be transformed into the required feature vector. | **RESOLVED** (Fitted inside serialized `Pipeline`) |
+| **3** | **No Standalone Inference Engine** | The feature engineering pipeline (text parsing, regex matchers, composite features) was scattered across notebook cells. | No single function or module exists that takes raw survey answers and returns a risk score. | **RESOLVED** (`src/feature_engineering.py`) |
+| **4** | **No Cohort Routing Mechanism** | The system lacked dynamic routing across Overall, Public, Private, and Daffodil cohorts. | Unable to demonstrate institutional comparison during live evaluation. | **RESOLVED** (`src/cohort.py`, `api/index.py`) |
+| **5** | **No Real-Time Explainability** | SHAP explanations were generated statically for the thesis. Individual students could not see their risk attribution. | Lack of personalized feedback or transparent risk breakdown. | **RESOLVED** (`src/explainability.py` Tree/Kernel SHAP) |
+| **6** | **No Interactive Web Interface** | No web interface existed for students to take the assessment or inspect model comparisons. | Cannot be demonstrated or evaluated as an interactive prototype. | **RESOLVED** (FastAPI backend + Vercel UI) |
+| **7** | **No Automated Verification Suite** | No automated tests existed verifying that the deployed pipeline exactly reproduces the notebook's test metrics. | Risk of silent preprocessing discrepancies. | **RESOLVED** (115+ automated pytest suite) |
 
 ---
 
@@ -454,7 +455,7 @@ To transition this research into a working prototype without modifying the resea
      - Step 9 Ablation trade-offs and Step 10 Ensemble matrix.
 
 ### Phase 4: Verification & Protocol Testing
-1. Execute verification tests comparing the inference script output against the test-set evaluations in `final_all(1).ipynb` to ensure 100% mathematical fidelity.
+1. Execute verification tests comparing the Python FastAPI backend output against the test-set evaluations in `final_all(1).ipynb` to ensure exact parity with serialized joblib models, while documenting browser JavaScript as a lightweight client-side heuristic approximation.
 2. Confirm that all predictions, metrics, and feature names match the source research notebook.
 
 ---
